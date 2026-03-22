@@ -10,28 +10,6 @@ jobs:
     name: 🧪 Run Tests
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: laravel_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
-    env:
-      DB_CONNECTION: mysql
-      DB_HOST: 127.0.0.1
-      DB_PORT: 3306
-      DB_DATABASE: laravel_test
-      DB_USERNAME: root
-      DB_PASSWORD: root
-
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -40,7 +18,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, bcmath, pdo, pdo_mysql, xml, curl, zip
+          extensions: mbstring, bcmath, pdo, pdo_sqlite, xml, curl, zip
           coverage: none
 
       - name: 📦 Cache Composer dependencies
@@ -53,8 +31,8 @@ jobs:
       - name: 🔧 Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
-      - name: 📄 Copy .env
-        run: cp .env.example .env
+      - name: 📄 Create .env from secret
+        run: echo "${{ secrets.ENV_FILE }}" > .env
 
       - name: 🔑 Generate app key
         run: php artisan key:generate
