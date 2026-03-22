@@ -108,8 +108,13 @@ jobs:
           mkdir -p ~/.ssh
           echo "$HOSTINGER_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          echo "StrictHostKeyChecking no" >> ~/.ssh/config
-          echo "UserKnownHostsFile /dev/null" >> ~/.ssh/config
+          cat >> ~/.ssh/config << 'EOF'
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            Port 65002
+            IdentityFile ~/.ssh/id_rsa
+          EOF
 
       - name: 📤 Deploy via Rsync
         if: env.secrets_ok == 'true'
@@ -123,14 +128,15 @@ jobs:
             --exclude='storage/framework/cache/*' \
             --exclude='storage/framework/sessions/*' \
             --exclude='storage/framework/views/*' \
-            -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+            -e "ssh -p 65002 -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
             ./ "$HOSTINGER_USERNAME@$HOSTINGER_HOST:$HOSTINGER_DEPLOY_PATH/"
 
       - name: ⚙️ Run post-deploy commands
         if: env.secrets_ok == 'true'
         run: |
-          ssh -i ~/.ssh/id_rsa \
+          ssh -p 65002 -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
             "$HOSTINGER_USERNAME@$HOSTINGER_HOST" \
             "cd $HOSTINGER_DEPLOY_PATH && \
             [ ! -f .env ] && cp .env.production .env || true && \
