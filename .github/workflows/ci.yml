@@ -102,50 +102,36 @@ jobs:
         if: env.secrets_ok == 'true'
         run: npm ci && npm run build
 
-      - name: 🔐 Setup SSH key
-        if: env.secrets_ok == 'true'
-        run: |
-          mkdir -p ~/.ssh
-          echo "$HOSTINGER_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          cat >> ~/.ssh/config << 'EOF'
-          Host *
-            StrictHostKeyChecking no
-            UserKnownHostsFile /dev/null
-            Port 65002
-            IdentityFile ~/.ssh/id_rsa
-          EOF
-
       - name: 📤 Deploy via Rsync
         if: env.secrets_ok == 'true'
-        run: |
-          rsync -avz --delete \
-            --exclude='.git' \
-            --exclude='.github' \
-            --exclude='node_modules' \
-            --exclude='.env' \
-            --exclude='storage/logs/*' \
-            --exclude='storage/framework/cache/*' \
-            --exclude='storage/framework/sessions/*' \
-            --exclude='storage/framework/views/*' \
-            -e "ssh -p 65002 -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-            ./ "$HOSTINGER_USERNAME@$HOSTINGER_HOST:$HOSTINGER_DEPLOY_PATH/"
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: ./
+          remote_path: ${{ secrets.HOSTINGER_DEPLOY_PATH }}/
+          remote_host: ${{ secrets.HOSTINGER_HOST }}
+          remote_port: 65002
+          remote_user: ${{ secrets.HOSTINGER_USERNAME }}
+          remote_key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+          exclude: .git,.github,node_modules,.env,storage/logs/*,storage/framework/cache/*,storage/framework/sessions/*,storage/framework/views/*
 
       - name: ⚙️ Run post-deploy commands
         if: env.secrets_ok == 'true'
-        run: |
-          ssh -p 65002 -i ~/.ssh/id_rsa \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            "$HOSTINGER_USERNAME@$HOSTINGER_HOST" \
-            "cd $HOSTINGER_DEPLOY_PATH && \
-            [ ! -f .env ] && cp .env.production .env || true && \
-            php artisan key:generate --no-interaction && \
-            php artisan migrate --force && \
-            php artisan config:cache && \
-            php artisan route:cache && \
-            php artisan view:cache && \
-            php artisan event:cache && \
-            chmod -R 775 storage bootstrap/cache && \
-            chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true && \
-            echo '✅ Deploy selesai!'"
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          port: 65002
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+            [ ! -f .env ] && cp .env.production .env || true
+            php artisan key:generate --no-interaction
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+            chmod -R 775 storage bootstrap/cache
+            chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+            echo '✅ Deploy selesai!'
