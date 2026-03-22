@@ -108,7 +108,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
 
-      - name: 📤 Deploy via Rsync
+      - name: 📤 Deploy project root via Rsync
         if: env.secrets_ok == 'true'
         run: |
           rsync -avz --delete \
@@ -116,12 +116,21 @@ jobs:
             --exclude='.github' \
             --exclude='node_modules' \
             --exclude='.env' \
+            --exclude='public/' \
+            --exclude='public_html' \
             --exclude='storage/logs' \
             --exclude='storage/framework/cache' \
             --exclude='storage/framework/sessions' \
             --exclude='storage/framework/views' \
             -e "ssh -p 65002 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
             ./ "${{ secrets.HOSTINGER_USERNAME }}@${{ secrets.HOSTINGER_HOST }}:${{ secrets.HOSTINGER_DEPLOY_PATH }}/"
+
+      - name: 📤 Deploy public/ to public_html
+        if: env.secrets_ok == 'true'
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p 65002 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+            ./public/ "${{ secrets.HOSTINGER_USERNAME }}@${{ secrets.HOSTINGER_HOST }}:${{ secrets.HOSTINGER_DEPLOY_PATH }}/public_html/"
 
       - name: 📄 Deploy .env to server
         if: env.secrets_ok == 'true'
