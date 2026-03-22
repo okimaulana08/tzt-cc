@@ -53,6 +53,7 @@ jobs:
     name: 🚀 Deploy to Hostinger
     runs-on: ubuntu-latest
     needs: test
+    environment: prod
     env:
       HOSTINGER_HOST: ${{ secrets.HOSTINGER_HOST }}
       HOSTINGER_USERNAME: ${{ secrets.HOSTINGER_USERNAME }}
