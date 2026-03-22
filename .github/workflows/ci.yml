@@ -104,16 +104,17 @@ jobs:
 
       - name: 📤 Deploy via Rsync
         if: env.secrets_ok == 'true'
-        uses: burnett01/rsync-deployments@7.0.1
+        uses: appleboy/rsync-action@master
         with:
-          switches: -avz --delete
-          path: ./
-          remote_path: ${{ secrets.HOSTINGER_DEPLOY_PATH }}/
-          remote_host: ${{ secrets.HOSTINGER_HOST }}
-          remote_port: 65002
-          remote_user: ${{ secrets.HOSTINGER_USERNAME }}
-          remote_key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
-          exclude: .git,.github,node_modules,.env,storage/logs/*,storage/framework/cache/*,storage/framework/sessions/*,storage/framework/views/*
+          host: ${{ secrets.HOSTINGER_HOST }}
+          port: 65002
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+          source: ./
+          target: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+          args: -avz
+          delete: true
+          exclude: .git .github node_modules .env storage/logs storage/framework/cache storage/framework/sessions storage/framework/views
 
       - name: ⚙️ Run post-deploy commands
         if: env.secrets_ok == 'true'
