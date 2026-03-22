@@ -129,6 +129,29 @@ Avoid re-generating large files — prefer targeted `Edit` operations.
 
 ---
 
+## Skills (Slash Commands)
+
+Skills are **invoked manually** by typing `/skill-name`. They do NOT auto-run. `CLAUDE.md` is auto-loaded every session; code style (Pint) auto-runs via hook on every PHP file edit.
+
+| Command | When to use |
+|---|---|
+| `/review` | After writing a feature or bug fix — before committing |
+| `/test` | Run & fix failing tests; detect coverage gaps |
+| `/style` | Full project-wide Pint check (per-file auto-runs via hook) |
+| `/ui-check` | After changing Blade views — audit accessibility & UX |
+| `/deploy` | Deploy locally; `/deploy prod` for production |
+
+**Recommended workflow per task:**
+```
+Build feature/fix bug
+  → /review           (catch issues early)
+  → /test             (ensure nothing breaks)
+  → /style            (final style sweep)
+  → commit & push
+```
+
+---
+
 ## Common Commands
 
 ```bash
