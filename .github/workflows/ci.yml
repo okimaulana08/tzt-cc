@@ -116,7 +116,6 @@ jobs:
             --exclude='.github' \
             --exclude='node_modules' \
             --exclude='.env' \
-            --exclude='public/' \
             --exclude='public_html' \
             --exclude='storage/logs' \
             --exclude='storage/framework/cache' \
