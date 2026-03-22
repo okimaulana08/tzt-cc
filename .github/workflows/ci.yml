@@ -108,7 +108,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "$HOSTINGER_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H "$HOSTINGER_HOST" >> ~/.ssh/known_hosts
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "UserKnownHostsFile /dev/null" >> ~/.ssh/config
 
       - name: 📤 Deploy via Rsync
         if: env.secrets_ok == 'true'
