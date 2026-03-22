@@ -21,6 +21,12 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="mb-6 rounded-md bg-red-50 border border-red-200 p-4 text-red-800 text-sm">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             @if ($posts->isEmpty())
                 <div class="text-center py-16 text-gray-500">
                     <p class="text-lg">No posts yet.</p>

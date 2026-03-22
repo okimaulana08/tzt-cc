@@ -47,6 +47,7 @@
                         </p>
                     @endif
 
+                    {{-- Trusted HTML: content must be sanitised before saving (e.g. HTMLPurifier or strip_tags in the model/action). --}}
                     <div class="prose prose-gray max-w-none">
                         {!! $post->content !!}
                     </div>
