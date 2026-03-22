@@ -84,6 +84,7 @@
                 </button>
 
                 <!-- User dropdown -->
+                @auth
                 <x-dropdown align="right" width="56" contentClasses="py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl rounded-xl">
                     <x-slot name="trigger">
                         <button class="flex items-center gap-2 pl-1 pr-2 py-1.5 rounded-lg
@@ -124,6 +125,7 @@
                         </form>
                     </x-slot>
                 </x-dropdown>
+                @endauth
             </div>
         </header>
 
