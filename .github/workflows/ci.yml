@@ -102,12 +102,11 @@ jobs:
         if: env.secrets_ok == 'true'
         run: npm ci && npm run build
 
-      - name: 🔐 Setup SSH key
+      - name: 🔐 Setup SSH Agent
         if: env.secrets_ok == 'true'
-        run: |
-          mkdir -p ~/.ssh
-          printf '%s' "${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
 
       - name: 📤 Deploy via Rsync
         if: env.secrets_ok == 'true'
@@ -121,7 +120,7 @@ jobs:
             --exclude='storage/framework/cache' \
             --exclude='storage/framework/sessions' \
             --exclude='storage/framework/views' \
-            -e "ssh -p 65002 -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+            -e "ssh -p 65002 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
             ./ "${{ secrets.HOSTINGER_USERNAME }}@${{ secrets.HOSTINGER_HOST }}:${{ secrets.HOSTINGER_DEPLOY_PATH }}/"
 
       - name: ⚙️ Run post-deploy commands
