@@ -157,6 +157,9 @@ jobs:
           key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+            mkdir -p storage/framework/{cache,sessions,views,testing}
+            mkdir -p storage/logs
+            mkdir -p bootstrap/cache
             grep -q "^APP_KEY=base64:" .env 2>/dev/null || php artisan key:generate --force
             php artisan migrate --force
             php artisan config:cache
