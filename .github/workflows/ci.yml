@@ -123,6 +123,21 @@ jobs:
             -e "ssh -p 65002 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
             ./ "${{ secrets.HOSTINGER_USERNAME }}@${{ secrets.HOSTINGER_HOST }}:${{ secrets.HOSTINGER_DEPLOY_PATH }}/"
 
+      - name: 📄 Deploy .env to server
+        if: env.secrets_ok == 'true'
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: |
+          if [ -z "$ENV_FILE" ]; then
+            echo "⚠️ ENV_FILE secret not set — skipping .env deploy"
+            exit 0
+          fi
+          printf '%s\n' "$ENV_FILE" > /tmp/.env.prod
+          rsync -avz /tmp/.env.prod \
+            -e "ssh -p 65002 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+            "${{ secrets.HOSTINGER_USERNAME }}@${{ secrets.HOSTINGER_HOST }}:${{ secrets.HOSTINGER_DEPLOY_PATH }}/.env"
+          rm -f /tmp/.env.prod
+
       - name: ⚙️ Run post-deploy commands
         if: env.secrets_ok == 'true'
         uses: appleboy/ssh-action@v1.2.0
@@ -133,8 +148,7 @@ jobs:
           key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.HOSTINGER_DEPLOY_PATH }}
-            [ ! -f .env ] && cp .env.production .env || true
-            php artisan key:generate --no-interaction
+            grep -q "^APP_KEY=base64:" .env 2>/dev/null || php artisan key:generate --force
             php artisan migrate --force
             php artisan config:cache
             php artisan route:cache
