@@ -33,19 +33,19 @@ class RolePermissionSeeder extends Seeder
 
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
-            ['name' => 'Admin User', 'password' => Hash::make('password')]
+            ['name' => 'Admin User', 'password' => Hash::make('password')],
         );
         $admin->assignRole('admin');
 
         $editor = User::firstOrCreate(
             ['email' => 'editor@example.com'],
-            ['name' => 'Editor User', 'password' => Hash::make('password')]
+            ['name' => 'Editor User', 'password' => Hash::make('password')],
         );
         $editor->assignRole('editor');
 
         $viewer = User::firstOrCreate(
             ['email' => 'viewer@example.com'],
-            ['name' => 'Viewer User', 'password' => Hash::make('password')]
+            ['name' => 'Viewer User', 'password' => Hash::make('password')],
         );
         $viewer->assignRole('viewer');
     }

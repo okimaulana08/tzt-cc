@@ -50,7 +50,7 @@
                     <span class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">All time</span>
                 </div>
                 <p class="relative text-3xl font-bold text-gray-900 dark:text-white">
-                    {{ \App\Models\Post::count() }}
+                    {{ $stats['total'] }}
                 </p>
                 <p class="relative text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">Total Posts</p>
             </div>
@@ -72,7 +72,7 @@
                     </span>
                 </div>
                 <p class="relative text-3xl font-bold text-gray-900 dark:text-white">
-                    {{ \App\Models\Post::where('status', 'published')->count() }}
+                    {{ $stats['published'] }}
                 </p>
                 <p class="relative text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">Published</p>
             </div>
@@ -92,7 +92,7 @@
                     <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">Draft</span>
                 </div>
                 <p class="relative text-3xl font-bold text-gray-900 dark:text-white">
-                    {{ \App\Models\Post::where('status', 'draft')->count() }}
+                    {{ $stats['drafts'] }}
                 </p>
                 <p class="relative text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">Drafts</p>
             </div>

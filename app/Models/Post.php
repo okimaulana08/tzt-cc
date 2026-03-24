@@ -26,7 +26,8 @@ class Post extends Model
     public static function generateSlug(string $title): string
     {
         $slug = Str::slug($title);
-        $count = static::where('slug', 'like', $slug . '%')->count();
+        $count = static::where('slug', 'like', $slug.'%')->count();
+
         return $count ? "{$slug}-{$count}" : $slug;
     }
 }
