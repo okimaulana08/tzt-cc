@@ -8,9 +8,12 @@
     "require": {
         "php": "^8.3",
         "ezyang/htmlpurifier": "^4.19",
+        "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^13.0",
+        "laravel/reverb": "^1.9",
         "laravel/tinker": "^3.0",
-        "spatie/laravel-permission": "^7.2"
+        "spatie/laravel-permission": "^7.2",
+        "tightenco/ziggy": "^2.6"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
